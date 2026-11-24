@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abel &amp; Beatriz — Nosso Casamento</title>
+  <!-- Google Fonts: Alegreya & Work Sans (idênticas ao modelo Canva) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <style id="site-style">
+    :root {
+      --rose: #ad6f72;       /* Rosa Canela Principal */
+      --rose-dark: #78494e;  /* Rosa Canela Escuro */
+      --rose-soft: #e9d4cf;  /* Rosa Canela Suave (seções alternadas) */
+      --cream: #faf5ef;      /* Creme Fundo Principal */
+      --ink: #453334;        /* Texto Escuro */
+      --muted: #594849;      /* Texto Secundário */
+      --border: #e8d9d1;     /* Borda Suave */
+      --field-border: #d9c7c0;
+      --card-bg: #fffdfb;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      width: 100%;
+      font-family: 'Alegreya', serif;
+      color: var(--ink);
+      background-color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    .site-wrap {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      font-family: 'Work Sans', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .font-work {
+      font-family: 'Work Sans', sans-serif;
+    }
+
+    .font-alegreya {
+      font-family: 'Alegreya', serif;
+    }
+
+    .nav-link {
+      font-family: 'Work Sans', sans-serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fffaf6;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      opacity: 0.85;
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+
+    .hero-photo {
+      min-height: 410px;
+      max-height: 640px;
+      width: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-frame {
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+      box-shadow: 0 14px 34px rgba(120, 73, 78, 0.12);
+    }
+
+    .photo-frame::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .arch-frame {
+      border-radius: 999px 999px 6px 6px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 28px rgba(120, 73, 78, 0.1);
+      background: #f2e5dc;
+    }
+
+    .rect-frame {
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 28px rgba(120, 73, 78, 0.1);
+      background: #f2e5dc;
+    }
+
+    .flourish {
+      color: #ba8b88;
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid var(--field-border);
+      background: #fffdfb;
+      border-radius: 3px;
+      padding: 0.85rem 1rem;
+      outline: none;
+      font-family: 'Work Sans', sans-serif;
+      font-size: 0.92rem;
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field:focus {
+      border-color: var(--rose);
+      box-shadow: 0 0 0 3px rgba(173, 111, 114, 0.15);
+    }
+
+    /* Botões Rosa Canela */
+    .btn-rose {
+      background-color: var(--rose);
+      color: #fffaf6;
+      font-family: 'Work Sans', sans-serif;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-rose:hover {
+      background-color: var(--rose-dark);
+    }
+
+    .btn-outline-rose {
+      border: 1px solid var(--rose);
+      color: var(--rose-dark);
+      font-family: 'Work Sans', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline-rose:hover {
+      background-color: var(--rose);
+      color: #fffaf6;
+    }
+
+    /* Estilos de Modo de Edição */
+    body.edit-mode [data-editable] {
+      outline: 1.5px dashed rgba(173, 111, 114, 0.65);
+      outline-offset: 4px;
+      border-radius: 3px;
+      cursor: text;
+      transition: outline-color 0.15s, background-color 0.15s;
+    }
+
+    body.edit-mode [data-editable]:hover,
+    body.edit-mode [data-editable]:focus {
+      outline: 2px solid var(--rose-dark);
+      background-color: rgba(255, 253, 251, 0.6);
+    }
+
+    .edit-only {
+      display: none !important;
+    }
+
+    body.edit-mode .edit-only {
+      display: inline-flex !important;
+    }
+
+    body.edit-mode .edit-only-block {
+      display: block !important;
+    }
+
+    .edit-only-block {
+      display: none !important;
+    }
+
+    /* Scrollbar suave */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--cream);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d3b2b0;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--rose);
+    }
+
+    /* Leaflet z-index fix */
+    .leaflet-pane, .leaflet-top, .leaflet-bottom {
+      z-index: 10 !important;
+    }
+  </style>
+  <!-- Tailwind CSS compilado para produção (gerado com o Tailwind CLI a partir de index.html e app.js) -->
+  <link rel="stylesheet" href="tailwind.css" />
+</head>
+<body>
+  <!-- Banner Superior de Modo Edição -->
+  <div id="edit-banner" class="edit-only-block sticky top-0 z-50 bg-[#453334] text-[#fffaf6] px-4 py-2.5 shadow-md border-b border-[#ad6f72]">
+    <div class="mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-3 text-sm font-work">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#e69a9e] animate-pulse"></span>
+        <strong>Modo de Edição Ativo:</strong>
+        <span class="text-[#e9d4cf] hidden sm:inline">Clique em qualquer texto para editar diretamente na página ou use os botões nas fotos e cartões.</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="#historia" onclick="triggerCouplePhotoUpload()" class="px-3 py-1.5 rounded bg-[#ad6f72] hover:bg-[#c47d80] text-white text-xs font-medium no-underline transition">
+          📷 + Adicionar Fotos
+        </a>
+        <button type="button" onclick="openThemeModal()" class="px-3 py-1.5 rounded bg-[#594849] hover:bg-[#78494e] text-xs font-medium transition">
+          🎨 Tom Rosa Canela
+        </button>
+        <button type="button" onclick="openRsvpAdminModal()" class="px-3 py-1.5 rounded bg-[#594849] hover:bg-[#78494e] text-xs font-medium transition">
+          📋 Lista de Confirmados<span id="rsvp-count-badge" class="hidden">0</span>
+        </button>
+        <button type="button" onclick="exportStandaloneHtml()" class="px-3 py-1.5 rounded bg-[#594849] hover:bg-[#78494e] text-xs font-medium transition" title="Baixar arquivo HTML com todas as edições salvas">
+          ⬇️ Baixar HTML
+        </button>
+        <button type="button" onclick="resetToDefaults()" class="px-3 py-1.5 rounded bg-[#594849] hover:bg-red-800 text-xs font-medium transition">
+          ↺ Restaurar Padrão
+        </button>
+        <button type="button" onclick="saveAndExitEditMode()" class="px-4 py-1.5 rounded bg-[#ad6f72] hover:bg-[#c47d80] text-white text-xs font-semibold shadow transition">
+          💾 Salvar e Concluir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-wrap">
+    <!-- CABEÇALHO (Idêntico ao modelo Canva em Rosa Canela) -->
+    <header id="site-header" class="w-full border-b border-[#e8d9d1] sticky top-0 z-40 shadow-sm" style="background-color: var(--rose);">
+      <div class="mx-auto max-w-7xl px-5 md:px-10 py-4 md:py-5 flex flex-wrap items-center justify-between gap-4">
+        <a href="#inicio" class="shrink-0 no-underline">
+          <span data-editable="header.coupleName" class="text-[#fffaf6] font-medium tracking-wide text-2xl md:text-[1.6rem]">Abel &amp; Beatriz</span>
+        </a>
+
+        <div class="flex items-center gap-4 md:gap-7 flex-wrap justify-end">
+          <nav aria-label="Navegação principal" class="flex flex-wrap items-center justify-end gap-x-4 gap-y-2 md:gap-7">
+            <a href="#celebracao" data-editable="header.navCelebration" class="nav-link">A celebração</a>
+            <a href="#historia" data-editable="header.navStory" class="nav-link">Nossa história</a>
+            <a href="#hospedagem" data-editable="header.navLodging" class="nav-link">Hospedagem</a>
+            <a href="#beleza" data-editable="header.navBeauty" class="nav-link">Beleza</a>
+            <a href="#presentes" data-editable="header.navGifts" class="nav-link">Presentes</a>
+            <a href="#confirmacao" data-editable="header.navRsvp" class="nav-link">Confirmar presença</a>
+          </nav>
+
+          <!-- Botão do Carrinho de Presentes -->
+          <button type="button" onclick="openCartModal()" class="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#78494e]/80 hover:bg-[#78494e] text-[#fffaf6] font-work text-xs tracking-wider uppercase transition" title="Ver Meu Carrinho de Presentes">
+            <span>🎁 Carrinho</span>
+            <span id="header-cart-count" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#fffaf6] text-[#78494e] font-bold text-[11px]">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main id="inicio">
+      <!-- 1. SEÇÃO HERO -->
+      <section data-template-id="hero-section" class="bg-[var(--cream)]">
+        <div class="mx-auto max-w-7xl grid md:grid-cols-2 items-center gap-10 md:gap-16 px-5 md:px-10 py-12 md:py-20">
+          <!-- Coluna de Texto -->
+          <div class="max-w-xl order-2 md:order-1">
+            <p data-editable="hero.kicker" class="eyebrow text-[var(--rose)] mb-5">UM NOVO CAPÍTULO COMEÇA</p>
+            <h1 data-editable="hero.title" class="text-[var(--rose-dark)] font-normal leading-[1.02] mb-6 text-4xl sm:text-5xl md:text-[3.5rem]">Abel &amp; Beatriz</h1>
+            <div aria-hidden="true" class="flourish mb-6">✳</div>
+            <p data-editable="hero.description" class="text-[#594849] leading-relaxed mb-8 text-xl md:text-[1.375rem]">
+              Com o coração cheio de alegria, queremos compartilhar com você a celebração do nosso amor. Será ainda mais especial ter você ao nosso lado.
+            </p>
+            <a href="#confirmacao" class="inline-block btn-rose px-8 py-4 rounded-[3px] text-xs uppercase tracking-[0.18em] font-medium no-underline shadow-sm">
+              <span data-editable="hero.buttonText">Confirme sua presença</span>
+            </a>
+          </div>
+
+          <!-- Coluna da Foto Principal -->
+          <div class="order-1 md:order-2">
+            <div
+              id="hero-photo-container"
+              class="photo-frame group select-none"
+              onmousedown="startPhotoDrag(event, 'hero')"
+              ontouchstart="startPhotoDrag(event, 'hero')"
+            >
+              <img id="hero-photo-img" src="" alt="Fotografia de Abel e Beatriz" draggable="false" class="hero-photo transition-transform duration-75" />
+              <!-- Dica de arraste no modo edição -->
+              <div class="edit-only absolute top-5 left-1/2 -translate-x-1/2 bg-black/70 text-[#fffaf6] px-3 py-1 rounded-full font-work text-[11px] pointer-events-none z-10 shadow">
+                ✋ Arraste a foto para ajustar a posição
+              </div>
+              <!-- Botões de edição e ajuste da foto principal -->
+              <div class="edit-only absolute inset-x-4 bottom-5 bg-black/75 backdrop-blur-xs p-3 rounded flex flex-col gap-2 z-10 font-work text-xs text-white" onmousedown="event.stopPropagation()" ontouchstart="event.stopPropagation()">
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                  <button type="button" onclick="triggerHeroPhotoUpload()" class="px-3 py-1.5 rounded bg-[#fffdfb] text-[#453334] font-semibold shadow hover:bg-[#f2e5dc] transition">
+                    📷 Trocar Foto
+                  </button>
+                  <button type="button" onclick="promptHeroPhotoUrl()" class="px-3 py-1.5 rounded bg-[#ad6f72] text-white font-semibold shadow hover:bg-[#78494e] transition">
+                    🔗 Link
+                  </button>
+                  <button type="button" onclick="nudgePhoto('hero', 0, -5)" class="px-2 py-1 rounded bg-white/20 hover:bg-white/30" title="Mover para cima">⬆</button>
+                  <button type="button" onclick="nudgePhoto('hero', 0, 5)" class="px-2 py-1 rounded bg-white/20 hover:bg-white/30" title="Mover para baixo">⬇</button>
+                  <button type="button" onclick="nudgePhoto('hero', -5, 0)" class="px-2 py-1 rounded bg-white/20 hover:bg-white/30" title="Mover para esquerda">⬅</button>
+                  <button type="button" onclick="nudgePhoto('hero', 5, 0)" class="px-2 py-1 rounded bg-white/20 hover:bg-white/30" title="Mover para direita">➡</button>
+                </div>
+                <div class="flex items-center justify-center gap-2 text-[11px]">
+                  <span>🔍 Zoom:</span>
+                  <input id="hero-zoom-slider" type="range" min="100" max="200" step="2" value="100" oninput="updatePhotoZoom('hero', this.value)" class="w-28 accent-[#ad6f72] cursor-pointer" />
+                  <button type="button" onclick="resetPhotoFraming('hero')" class="px-2 py-0.5 rounded bg-white/15 hover:bg-white/25 text-[10px]">Centralizar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. SEÇÃO A CELEBRAÇÃO -->
+      <section id="celebracao" data-template-id="event-section" class="px-5 md:px-10 py-20 md:py-28" style="background-color: var(--rose-soft);">
+        <div class="mx-auto max-w-6xl text-center">
+          <p data-editable="celebration.kicker" class="eyebrow text-[var(--rose)] mb-4">GUARDE ESTE MOMENTO</p>
+          <h2 data-editable="celebration.title" class="text-[var(--rose-dark)] font-normal mb-5 text-3xl md:text-[2.25rem]">A celebração</h2>
+          <p data-editable="celebration.intro" class="text-[#594849] max-w-2xl mx-auto mb-12 leading-relaxed text-lg md:text-[1.25rem]">
+            Estamos preparando cada detalhe com carinho. Em breve, compartilharemos as informações completas para celebrarmos juntos.
+          </p>
+
+          <!-- 3 Cards: Data, Horário, Local -->
+          <div class="grid md:grid-cols-3 gap-6 mb-10">
+            <!-- Card Data -->
+            <article class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[4px] p-8 md:p-10 shadow-sm flex flex-col items-center justify-center">
+              <div aria-hidden="true" class="text-[var(--rose)] text-3xl mb-5">✳</div>
+              <h3 data-editable="celebration.dateHeading" class="text-[var(--rose-dark)] font-normal mb-2 text-3xl md:text-[2.5rem] leading-tight">23/01/2027</h3>
+              <p data-editable="celebration.dateSub" class="text-[#594849] text-[1.0625rem]"></p>
+            </article>
+
+            <!-- Card Horário -->
+            <article class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[4px] p-8 md:p-10 shadow-sm flex flex-col items-center justify-center">
+              <div aria-hidden="true" class="text-[var(--rose)] text-3xl mb-5">◌</div>
+              <h3 data-editable="celebration.timeHeading" class="text-[var(--rose-dark)] font-normal mb-2 text-3xl md:text-[2.5rem] leading-tight">16:30</h3>
+              <p data-editable="celebration.timeSub" class="text-[#594849] text-[1.0625rem]"></p>
+            </article>
+
+            <!-- Card Local -->
+            <article class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[4px] p-8 md:p-10 shadow-sm flex flex-col items-center justify-center">
+              <div aria-hidden="true" class="text-[var(--rose)] text-3xl mb-5">◇</div>
+              <h3 data-editable="celebration.placeHeading" class="text-[var(--rose-dark)] font-normal mb-2 text-2xl md:text-[1.75rem] leading-snug">Sítio de Dite, em sanharó, Pindaí-BA</h3>
+              <p data-editable="celebration.placeSub" class="text-[#594849] text-[1.0625rem]"></p>
+            </article>
+          </div>
+
+          <!-- Apenas o Botão de Redirecionamento para o Google Maps (sem o bloco do mapa) -->
+          <div class="mt-4 flex flex-wrap items-center justify-center gap-4">
+            <a id="maps-external-link" href="https://maps.app.goo.gl/38zUL1h6aSQU4DqU8" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2.5 btn-rose px-8 py-4 rounded-[3px] text-xs uppercase tracking-[0.16em] font-medium no-underline shadow-sm">
+              <span>📍</span>
+              <span data-editable="celebration.mapsButtonText">Abrir localização no Google Maps</span>
+            </a>
+            <button type="button" onclick="promptMapSettings()" class="edit-only px-4 py-3 rounded bg-[#fffdfb] border border-[#ad6f72] text-[#78494e] font-work text-xs font-semibold hover:bg-[#faf5ef] transition shadow-xs">
+              🔗 Editar Link do Google Maps
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. SEÇÃO NOSSA HISTÓRIA & GALERIA DE FOTOS DO CASAL -->
+      <section id="historia" data-template-id="story-section" class="bg-[var(--cream)] px-5 md:px-10 py-20 md:py-28">
+        <div class="mx-auto max-w-6xl">
+          <div class="text-center mb-12">
+            <p data-editable="story.kicker" class="eyebrow text-[var(--rose)] mb-4">NOSSA HISTÓRIA</p>
+            <h2 data-editable="story.title" class="text-[var(--rose-dark)] font-normal text-3xl md:text-[2.15rem]">O amor nos trouxe até aqui</h2>
+            <p data-editable="story.subtitle" class="text-[#756264] mt-4 max-w-2xl mx-auto text-lg leading-relaxed">
+              Histórias de amor existem, e, às vezes, nem nós mesmos acreditamos todo o tempo que já estamos juntos. Estamos preparando tudo com muito carinho para curtirmos cada momento com nossos amigos e familiares queridos!
+            </p>
+
+            <!-- Painel de Edição da Galeria de Fotos (Quantidade de Fotos, Colunas e Upload) -->
+            <div class="edit-only-block mt-8 bg-[#fffdfb] border border-[#e8d9d1] rounded-[6px] p-5 max-w-3xl mx-auto shadow-sm font-work text-xs">
+              <div class="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#f2e5dc]">
+                <!-- Controle de Quantidade de Fotos -->
+                <div class="flex items-center gap-2.5">
+                  <span class="font-semibold text-[#453334]">Quantidade de Fotos:</span>
+                  <button type="button" onclick="changePhotoSlotCount(-1)" class="w-8 h-8 rounded bg-[#f2e5dc] hover:bg-[#ad6f72] hover:text-white font-bold text-sm transition" title="Remover último espaço de foto">−</button>
+                  <span id="photo-count-display" class="px-3 py-1 rounded bg-[#faf5ef] border border-[#d9c7c0] font-bold text-sm text-[#78494e]">4</span>
+                  <button type="button" onclick="changePhotoSlotCount(1)" class="w-8 h-8 rounded bg-[#f2e5dc] hover:bg-[#ad6f72] hover:text-white font-bold text-sm transition" title="Adicionar mais um espaço de foto">+</button>
+                  <button type="button" onclick="promptSetPhotoCount()" class="px-2.5 py-1.5 rounded border border-[#d9c7c0] hover:border-[#ad6f72] text-[#594849]">
+                    Definir nº
+                  </button>
+                </div>
+
+                <!-- Fotos por linha (Colunas) -->
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold text-[#453334]">Fotos por linha:</span>
+                  <select id="story-columns-select" onchange="updateStoryColumns(this.value)" class="border border-[#d9c7c0] rounded px-2.5 py-1.5 bg-[#faf5ef] text-[#453334]">
+                    <option value="2">2 fotos por linha</option>
+                    <option value="3">3 fotos por linha</option>
+                    <option value="4">4 fotos por linha</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
+                <button type="button" onclick="triggerCouplePhotoUpload()" class="inline-flex items-center gap-2 btn-rose px-5 py-2.5 rounded-[3px] text-xs uppercase tracking-[0.14em] font-medium shadow-sm">
+                  <span>📷 + Enviar Mais Fotos (Computador/Celular)</span>
+                </button>
+                <button type="button" onclick="promptAddCouplePhotoUrl()" class="inline-flex items-center gap-2 btn-outline-rose px-5 py-2.5 rounded-[3px] text-xs uppercase tracking-[0.14em] font-medium bg-[#fffdfb]">
+                  <span>🔗 + Incluir Foto por Link</span>
+                </button>
+              </div>
+              <p class="text-[11px] text-[#756264] mt-3">
+                💡 <strong>Dica:</strong> Para ajustar o enquadramento de qualquer foto abaixo, basta <strong>clicar e arrastar a imagem</strong> dentro da moldura ou usar as setas e o controle de Zoom!
+              </p>
+            </div>
+          </div>
+
+          <!-- Grid de Fotos do Casal -->
+          <div id="couple-photos-grid" class="grid sm:grid-cols-2 lg:grid-cols-2 gap-8">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. GUIA SUGESTÕES DE HOSPEDAGEM -->
+      <section id="hospedagem" data-template-id="lodging-section" class="px-5 md:px-10 py-20 md:py-28" style="background-color: var(--rose-soft);">
+        <div class="mx-auto max-w-6xl">
+          <div class="text-center max-w-2xl mx-auto mb-12">
+            <p data-editable="lodging.kicker" class="eyebrow text-[var(--rose-dark)] mb-4">CONFORTO E DESCANSO</p>
+            <h2 data-editable="lodging.title" class="text-[var(--rose-dark)] font-normal mb-5 text-3xl md:text-[2.15rem]">Sugestões de hospedagem</h2>
+            <p data-editable="lodging.intro" class="text-[#594849] leading-relaxed text-lg md:text-[1.2rem]">
+              Para os convidados que vêm de outras cidades, selecionamos opções acolhedoras de hospedagem em Pindaí e região para sua estadia.
+            </p>
+            <div class="mt-6">
+              <button type="button" onclick="addLodgingItem()" class="edit-only btn-rose px-5 py-2.5 rounded-[3px] text-xs uppercase tracking-[0.14em] font-medium shadow-sm">
+                ➕ Adicionar Local de Hospedagem
+              </button>
+            </div>
+          </div>
+
+          <div id="lodging-grid" class="grid md:grid-cols-3 gap-6">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. GUIA MAQUIADORAS E CABELEIREIRAS -->
+      <section id="beleza" data-template-id="beauty-section" class="bg-[var(--cream)] px-5 md:px-10 py-20 md:py-28">
+        <div class="mx-auto max-w-6xl">
+          <div class="text-center max-w-2xl mx-auto mb-12">
+            <p data-editable="beauty.kicker" class="eyebrow text-[var(--rose)] mb-4">PRODUÇÃO E BELEZA</p>
+            <h2 data-editable="beauty.title" class="text-[var(--rose-dark)] font-normal mb-5 text-3xl md:text-[2.15rem]">Maquiadoras e cabeleireiras</h2>
+            <p data-editable="beauty.intro" class="text-[#594849] leading-relaxed text-lg md:text-[1.2rem]">
+              Para que você se sinta ainda mais especial no nosso grande dia, reunimos indicações de profissionais de maquiagem e penteado da região.
+            </p>
+            <div class="mt-6">
+              <button type="button" onclick="addBeautyItem()" class="edit-only btn-rose px-5 py-2.5 rounded-[3px] text-xs uppercase tracking-[0.14em] font-medium shadow-sm">
+                ➕ Adicionar Maquiadora / Cabeleireira
+              </button>
+            </div>
+          </div>
+
+          <div id="beauty-grid" class="grid md:grid-cols-3 gap-6">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. GUIA SUGESTÕES DE PRESENTES (Com a lista completa do Casar.com) -->
+      <section id="presentes" data-template-id="gifts-section" class="px-5 md:px-10 py-20 md:py-28" style="background-color: var(--rose-soft);">
+        <div class="mx-auto max-w-6xl">
+          <div class="text-center max-w-2xl mx-auto mb-10">
+            <p data-editable="giftsSection.kicker" class="eyebrow text-[var(--rose-dark)] mb-4">UM GESTO DE CARINHO</p>
+            <h2 data-editable="giftsSection.title" class="text-[var(--rose-dark)] font-normal mb-5 text-3xl md:text-[2.15rem]">Sugestões de presentes</h2>
+            <p data-editable="giftsSection.intro" class="text-[#594849] leading-relaxed text-lg md:text-[1.25rem]">
+              Sua presença é o nosso maior presente. Se quiser nos presentear, aqui estão algumas ideias para o nosso novo capítulo.
+            </p>
+          </div>
+
+          <!-- Barra de Filtros, Busca e Ações da Lista de Presentes -->
+          <div class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[4px] p-5 md:p-6 mb-8 shadow-sm">
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+              <!-- Busca -->
+              <div class="relative flex-1">
+                <input id="gift-search" type="text" placeholder="Buscar presente na lista (ex: Cafeteira, Jogo de Banho...)" oninput="renderGiftsList()" class="field pl-10" />
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ad6f72]">🔍</span>
+              </div>
+
+              <!-- Filtro de Categoria -->
+              <div class="sm:w-56">
+                <select id="gift-category" onchange="renderGiftsList()" class="field">
+                  <option value="ALL">Todas as categorias</option>
+                </select>
+              </div>
+
+              <!-- Ordenação -->
+              <div class="sm:w-52">
+                <select id="gift-sort" onchange="renderGiftsList()" class="field">
+                  <option value="alpha">Ordem Alfabética (A-Z)</option>
+                  <option value="price-asc">Menor Preço</option>
+                  <option value="price-desc">Maior Preço</option>
+                </select>
+              </div>
+
+              <!-- Botão do Carrinho -->
+              <button type="button" onclick="openCartModal()" class="btn-rose px-5 py-3.5 rounded-[3px] text-xs uppercase tracking-[0.14em] font-medium shrink-0 flex items-center justify-center gap-2">
+                <span>🎁 Meu Carrinho (<span id="gifts-bar-cart-count">0</span>)</span>
+              </button>
+            </div>
+
+            <!-- Controles de Edição da Lista de Presentes -->
+            <div class="edit-only-block mt-4 pt-4 border-t border-[#e8d9d1]">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <span class="font-work text-xs text-[#78494e] font-semibold">Opções do Editor para a Lista de Presentes:</span>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" onclick="openAddGiftModal()" class="btn-rose px-4 py-2 rounded text-xs font-work font-medium">
+                    ➕ Adicionar Novo Presente
+                  </button>
+                  <button type="button" onclick="openPaymentConfigModal()" class="btn-outline-rose bg-white px-4 py-2 rounded text-xs font-work font-medium">
+                    💳 Configurar Chave PIX / Link Casar.com
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grade com os 50 Presentes de noivos.casar.com/beatrizoliveira-e-abelcosta -->
+          <div id="gifts-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Renderizado via JS -->
+          </div>
+
+          <!-- Botão Ver Todos / Mostrar Menos quando houver muitos itens -->
+          <div id="gifts-Toggle-Wrap" class="text-center mt-10">
+            <button id="toggle-all-gifts-btn" type="button" onclick="toggleShowAllGifts()" class="btn-outline-rose bg-[#fffdfb] px-8 py-3.5 rounded-[3px] text-xs uppercase tracking-[0.18em] font-semibold shadow-sm">
+              Ver todos os 50 presentes
+            </button>
+          </div>
+
+          <p data-editable="giftsSection.note" class="text-center text-[#594849] mt-8 text-base">
+            Estas são apenas sugestões; escolha um item acima ou combine os detalhes diretamente com o casal.
+          </p>
+        </div>
+      </section>
+
+      <!-- 7. SEÇÃO CONFIRME SUA PRESENÇA (RSVP) -->
+      <section id="confirmacao" data-template-id="rsvp-section" class="bg-[var(--cream)] px-5 md:px-10 py-20 md:py-28">
+        <div class="mx-auto max-w-3xl">
+          <div class="text-center mb-10">
+            <p data-editable="rsvp.kicker" class="eyebrow text-[var(--rose)] mb-4">ESPERAMOS VOCÊ</p>
+            <h2 data-editable="rsvp.title" class="text-[var(--rose-dark)] font-normal mb-4 text-3xl md:text-[2.15rem]">Confirme sua presença</h2>
+            <p data-editable="rsvp.intro" class="text-[#594849] text-lg md:text-[1.25rem]">
+              Conte para nós se poderá participar desse dia especial.
+            </p>
+          </div>
+
+          <div class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[4px] p-6 sm:p-10 shadow-sm">
+            <form id="rsvp-form" onsubmit="handleRsvpSubmit(event)" class="space-y-6">
+              <div class="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <label for="guest-name" data-editable="rsvp.nameLabel" class="block font-medium text-[#453334] mb-2 text-[1.0625rem]">Seu nome</label>
+                  <input id="guest-name" name="guest_name" type="text" maxlength="100" required class="field" placeholder="Digite seu nome completo" />
+                </div>
+                <div>
+                  <label for="guest-count" data-editable="rsvp.countLabel" class="block font-medium text-[#453334] mb-2 text-[1.0625rem]">Número de pessoas</label>
+                  <input id="guest-count" name="guest_count" type="number" min="1" max="20" value="1" required class="field" oninput="renderCompanionFields()" />
+                </div>
+              </div>
+
+              <div>
+                <label for="attendance" data-editable="rsvp.attendanceLabel" class="block font-medium text-[#453334] mb-2 text-[1.0625rem]">Você poderá comparecer?</label>
+                <select id="attendance" name="attendance" required class="field" onchange="renderCompanionFields()">
+                  <option value="">Selecione uma resposta</option>
+                  <option value="Sim">Sim, estarei presente</option>
+                  <option value="Não">Não poderei comparecer</option>
+                </select>
+              </div>
+
+              <!-- Nomes dos acompanhantes (aparece quando o número de pessoas é maior que 1) -->
+              <div id="companions-wrap" class="hidden">
+                <label data-editable="rsvp.companionsLabel" class="block font-medium text-[#453334] mb-1 text-[1.0625rem]">Nome do(s) acompanhante(s)</label>
+                <p class="font-work text-xs text-[#756264] mb-3">Escreva o nome completo de cada pessoa que irá com você.</p>
+                <div id="companions-fields" class="grid sm:grid-cols-2 gap-3"></div>
+              </div>
+
+              <div>
+                <label for="guest-message" data-editable="rsvp.messageLabel" class="block font-medium text-[#453334] mb-2 text-[1.0625rem]">Deixe um recado (opcional)</label>
+                <textarea id="guest-message" name="message" rows="4" maxlength="1000" class="field" placeholder="Escreva uma mensagem carinhosa para Abel & Beatriz..."></textarea>
+              </div>
+
+              <div>
+                <button type="submit" id="submit-rsvp" class="btn-rose px-8 py-3.5 rounded-[3px] text-xs uppercase tracking-[0.16em] font-medium shadow-sm">
+                  <span data-editable="rsvp.buttonText">Enviar resposta</span>
+                </button>
+              </div>
+
+              <div id="rsvp-feedback" class="hidden p-4 rounded bg-[#f2e5dc] border border-[#ad6f72] text-[#78494e] font-work text-sm"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="py-10 px-5 text-center" style="background-color: var(--rose-dark);">
+      <p data-editable="footer.text" class="text-[#fffaf6] text-lg">Abel &amp; Beatriz · Com amor, para celebrar juntos.</p>
+    </footer>
+  </div>
+
+  <!-- BOTÃO FLUTUANTE DE EDIÇÃO / SALVAMENTO -->
+  <div id="admin-floating" class="fixed bottom-5 right-5 z-50 flex-col items-end gap-2" style="display:none">
+    <div id="save-toast" class="hidden bg-[#453334] text-[#fffaf6] font-work text-xs px-4 py-2.5 rounded shadow-lg border border-[#ad6f72] transition-all">
+      ✓ Alterações salvas com sucesso!
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="floating-save-btn" type="button" onclick="saveSiteData(true)" class="edit-only px-4 py-3 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white font-work text-xs font-semibold shadow-xl transition flex items-center gap-1.5">
+        <span>💾 Salvar Agora</span>
+      </button>
+      <button id="toggle-edit-btn" type="button" onclick="toggleEditMode()" class="px-5 py-3 rounded-full bg-[#78494e] hover:bg-[#453334] text-[#fffaf6] font-work text-xs font-semibold tracking-wider uppercase shadow-xl border border-[#fffaf6]/30 transition flex items-center gap-2">
+        <span id="toggle-edit-icon">✏️</span>
+        <span id="toggle-edit-label">Editar Site</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- INPUTS DE ARQUIVO OCULTOS PARA UPLOAD DE FOTOS -->
+  <input type="file" id="hero-file-input" accept="image/*" class="hidden" onchange="handleHeroFileSelected(event)" />
+  <input type="file" id="couple-file-input" accept="image/*" multiple class="hidden" onchange="handleCoupleFilesSelected(event)" />
+  <input type="file" id="replace-couple-file-input" accept="image/*" class="hidden" onchange="handleReplaceCoupleFileSelected(event)" />
+
+  <!-- MODAL: MEU CARRINHO DE PRESENTES (Idêntico ao fluxo do Casar.com) -->
+  <div id="cart-modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[6px] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 md:p-8">
+      <div class="flex items-center justify-between border-b border-[#e8d9d1] pb-4 mb-5">
+        <h3 class="text-2xl md:text-3xl text-[var(--rose-dark)] font-normal">Meu carrinho</h3>
+        <button type="button" onclick="closeCartModal()" class="text-[#594849] hover:text-[#453334] text-2xl leading-none">&times;</button>
+      </div>
+
+      <div id="cart-items-container">
+        <!-- Renderizado via JS -->
+      </div>
+
+      <div id="cart-footer-actions" class="mt-6 pt-4 border-t border-[#e8d9d1]">
+        <div class="flex items-center justify-between text-xl mb-4">
+          <span class="font-medium text-[#453334]">Total</span>
+          <span id="cart-total-value" class="font-semibold text-[var(--rose-dark)] text-2xl">R$ 0,00</span>
+        </div>
+
+        <div class="bg-[#faf5ef] border border-[#e8d9d1] rounded p-3.5 mb-5 flex items-center gap-3 font-work text-xs text-[#594849]">
+          <span class="text-lg">💳</span>
+          <span>Parcele suas compras em até 6x no cartão de crédito ou presenteie via PIX diretamente para o casal.</span>
+        </div>
+
+        <div class="space-y-3">
+          <button type="button" onclick="closeCartModal()" class="w-full py-3.5 rounded-[4px] bg-[#333333] hover:bg-[#1f1f1f] text-white font-work text-sm font-medium transition">
+            Adicionar mais itens
+          </button>
+          <button type="button" onclick="showCheckoutOptions()" class="w-full py-3.5 rounded-[4px] btn-rose font-work text-sm font-semibold transition shadow">
+            Finalizar compra
+          </button>
+        </div>
+
+        <!-- Opções de Finalização (PIX ou Casar.com) -->
+        <div id="checkout-options-box" class="hidden mt-5 p-5 rounded bg-[#faf5ef] border border-[#ad6f72] space-y-4">
+          <h4 class="text-lg font-semibold text-[var(--rose-dark)]">Escolha como deseja finalizar o presente:</h4>
+          <div class="grid sm:grid-cols-2 gap-3 font-work text-xs">
+            <a id="checkout-casar-link" href="https://noivos.casar.com/beatrizoliveira-e-abelcosta" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center p-4 rounded bg-white border border-[#e8d9d1] hover:border-[#ad6f72] text-center no-underline text-[#453334] shadow-xs transition">
+              <span class="text-2xl mb-1">🌐</span>
+              <strong class="text-sm text-[var(--rose-dark)] mb-1">Pagar pelo Site Casar.com</strong>
+              <span class="text-[#594849]">Cartão de crédito em até 6x ou Boleto na lista oficial</span>
+            </a>
+            <button type="button" onclick="copyPixKey()" class="flex flex-col items-center justify-center p-4 rounded bg-white border border-[#e8d9d1] hover:border-[#ad6f72] text-center text-[#453334] shadow-xs transition">
+              <span class="text-2xl mb-1">💠</span>
+              <strong class="text-sm text-[var(--rose-dark)] mb-1">Presentear via PIX</strong>
+              <span id="checkout-pix-display" class="text-[#594849] break-all">Clique para copiar a Chave PIX</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LIGHTBOX DE FOTO -->
+  <div id="lightbox-modal" onclick="closeLightbox()" class="fixed inset-0 z-50 hidden bg-black/85 flex items-center justify-center p-4 cursor-zoom-out">
+    <div class="max-w-4xl max-h-[90vh] flex flex-col items-center">
+      <img id="lightbox-img" src="" alt="Foto ampliada" class="max-h-[82vh] max-w-full object-contain rounded shadow-2xl" />
+      <p id="lightbox-caption" class="text-[#fffaf6] mt-3 text-lg font-alegreya"></p>
+    </div>
+  </div>
+
+  <!-- MODAL: PERSONALIZAR TOM ROSA CANELA -->
+  <div id="theme-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[6px] max-w-md w-full p-6 shadow-2xl font-work">
+      <div class="flex items-center justify-between border-b border-[#e8d9d1] pb-3 mb-4">
+        <h3 class="text-xl font-alegreya text-[var(--rose-dark)] font-semibold">Paleta de Cores (Rosa Canela)</h3>
+        <button type="button" onclick="closeThemeModal()" class="text-xl text-[#594849]">&times;</button>
+      </div>
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-medium mb-1">Rosa Canela Principal (Cabeçalho, Botões e Destaques)</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="color-rose" onchange="updateThemeColor('rose', this.value)" class="h-9 w-14 cursor-pointer" />
+            <input type="text" id="color-rose-text" oninput="updateThemeColor('rose', this.value)" class="field py-1.5 text-xs" />
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Rosa Canela Escuro (Títulos e Rodapé)</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="color-roseDark" onchange="updateThemeColor('roseDark', this.value)" class="h-9 w-14 cursor-pointer" />
+            <input type="text" id="color-roseDark-text" oninput="updateThemeColor('roseDark', this.value)" class="field py-1.5 text-xs" />
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium mb-1">Rosa Canela Suave (Fundo de Seções Alternadas)</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="color-roseSoft" onchange="updateThemeColor('roseSoft', this.value)" class="h-9 w-14 cursor-pointer" />
+            <input type="text" id="color-roseSoft-text" oninput="updateThemeColor('roseSoft', this.value)" class="field py-1.5 text-xs" />
+          </div>
+        </div>
+        <div class="pt-2 flex flex-wrap gap-2">
+          <button type="button" onclick="applyPresetPalette('#ad6f72', '#78494e', '#e9d4cf')" class="px-3 py-1.5 rounded border border-[#e8d9d1] bg-[#faf5ef] hover:bg-[#e9d4cf]">
+            Rosa Canela Original (#ad6f72)
+          </button>
+          <button type="button" onclick="applyPresetPalette('#b86b68', '#6e3b3a', '#edd8d5')" class="px-3 py-1.5 rounded border border-[#e8d9d1] bg-[#faf5ef] hover:bg-[#edd8d5]">
+            Rosa Canela Intenso (#b86b68)
+          </button>
+          <button type="button" onclick="applyPresetPalette('#c27d7a', '#7c4746', '#f2e2df')" class="px-3 py-1.5 rounded border border-[#e8d9d1] bg-[#faf5ef] hover:bg-[#f2e2df]">
+            Rosa Canela Suave (#c27d7a)
+          </button>
+        </div>
+      </div>
+      <div class="mt-6 text-right">
+        <button type="button" onclick="closeThemeModal()" class="btn-rose px-5 py-2 rounded text-xs font-semibold">Concluído</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LISTA PRIVADA DE CONFIRMADOS (somente os noivos, protegida por senha) -->
+  <div id="rsvp-admin-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-[#fffdfb] border border-[#e8d9d1] rounded-[6px] max-w-3xl w-full max-h-[88vh] overflow-y-auto p-6 shadow-2xl font-work">
+      <div class="flex items-center justify-between border-b border-[#e8d9d1] pb-3 mb-4">
+        <h3 class="text-xl font-alegreya text-[var(--rose-dark)] font-semibold">🔒 Lista de Confirmados (só para Abel &amp; Beatriz)</h3>
+        <button type="button" onclick="closeRsvpAdminModal()" class="text-xl text-[#594849]">&times;</button>
+      </div>
+
+      <div id="rsvp-source-info" class="p-3 rounded bg-[#faf5ef] border border-[#e8d9d1] text-xs text-[#594849] mb-4"></div>
+
+      <form onsubmit="loadRsvpList(event)" class="flex flex-wrap items-end gap-2 mb-4 text-xs">
+        <div class="flex-1 min-w-[180px]">
+          <label for="rsvp-admin-key" class="block font-medium mb-1 text-[#453334]">Senha da lista</label>
+          <input id="rsvp-admin-key" type="password" autocomplete="current-password" class="field py-2 text-xs" placeholder="Digite a senha" />
+        </div>
+        <button type="submit" class="btn-rose px-5 py-2.5 rounded text-xs font-semibold">Ver lista</button>
+        <button type="button" onclick="downloadRsvpCsv()" class="btn-outline-rose bg-white px-4 py-2.5 rounded text-xs font-semibold">⬇️ Baixar planilha (CSV)</button>
+      </form>
+
+      <div id="rsvp-submissions-list" class="space-y-3 text-xs"></div>
+
+      <details class="edit-only-block mt-6 border-t border-[#e8d9d1] pt-4 text-xs">
+        <summary class="cursor-pointer font-semibold text-[#78494e]">⚙️ Configurar Google Planilhas (onde as respostas ficam guardadas)</summary>
+        <div class="mt-3 space-y-2">
+          <label for="rsvp-endpoint-input" class="block font-medium text-[#453334]">Link do App da Web do Google Apps Script</label>
+          <input id="rsvp-endpoint-input" type="url" class="field py-2 text-xs" placeholder="https://script.google.com/macros/s/.../exec" />
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="saveRsvpEndpoint()" class="btn-rose px-4 py-2 rounded text-xs font-semibold">Salvar link</button>
+          </div>
+          <p class="text-[#756264]">Passo a passo no arquivo <strong>COMO-ATIVAR-LISTA-DE-CONFIRMADOS.txt</strong>. Depois de salvar, use “⬇️ Baixar HTML” e publique o arquivo novo.</p>
+        </div>
+      </details>
+
+      <div class="mt-6 text-right">
+        <button type="button" onclick="closeRsvpAdminModal()" class="btn-rose px-5 py-2 rounded text-xs font-semibold">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="default-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

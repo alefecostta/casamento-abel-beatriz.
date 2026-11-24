@@ -1,0 +1,42 @@
+COMO ATIVAR A LISTA DE CONFIRMADOS (só você e o Abel veem)
+==========================================================
+
+As respostas dos convidados vão direto para uma Planilha Google que fica no SEU Google Drive.
+Ninguém mais consegue ver: nem os convidados, nem quem abrir o código do site.
+Leva uns 5 minutos e é grátis.
+
+1. CRIAR A PLANILHA
+   - Entre em https://sheets.new (com a sua conta Google).
+   - Dê um nome, por exemplo: "Confirmados — Casamento Abel & Beatriz".
+
+2. COLAR O CÓDIGO
+   - Na planilha: menu Extensões > Apps Script.
+   - Apague o que estiver lá e cole TODO o conteúdo do arquivo "google-apps-script.gs".
+   - Na linha  const SENHA = 'troque-esta-senha';  troque pela senha que vocês quiserem.
+   - Clique no disquete (Salvar).
+
+3. PUBLICAR
+   - Botão azul "Implantar" > "Nova implantação".
+   - Na engrenagem, escolha "App da Web".
+   - Executar como: "Eu".  Quem pode acessar: "Qualquer pessoa".
+     (isso só permite que o site ENVIE respostas; para LER a lista precisa da senha)
+   - Clique em "Implantar" e autorize com sua conta Google
+     (se aparecer "O Google não verificou este app": Avançado > Acessar... — é o seu próprio script).
+   - Copie o link do "App da Web" (termina em /exec).
+
+4. LIGAR NO SITE
+   - Opção fácil: me mande o link que eu coloco no site para você.
+   - Ou faça você mesma: abra o site com ?admin no final do endereço
+     (ex.: site-arquivo-unico.html?admin), clique em "Editar Site" > "📋 Lista de Confirmados" >
+     "⚙️ Configurar Google Planilhas", cole o link e clique em "Salvar link".
+     Depois clique em "⬇️ Baixar HTML" e publique o arquivo index.html que for baixado.
+
+5. VER A LISTA
+   - Na própria planilha (aba "Confirmações"), ou
+   - No site: abra com ?admin, clique em "Editar Site" > "📋 Lista de Confirmados", digite a senha.
+     Lá aparece o total de pessoas, quem vai, acompanhantes, recados e o botão para baixar em Excel (CSV).
+   - Para o Abel ver também: compartilhe a planilha com o e-mail dele (botão "Compartilhar")
+     e passe a senha para ele.
+
+IMPORTANTE: se você alterar o código do Apps Script depois, use "Implantar > Gerenciar implantações >
+editar (lápis) > Nova versão", assim o link continua o mesmo.
