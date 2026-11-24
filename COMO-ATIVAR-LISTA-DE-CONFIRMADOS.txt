@@ -1,42 +1,48 @@
-COMO ATIVAR A LISTA DE CONFIRMADOS (só você e o Abel veem)
-==========================================================
+COMO ATIVAR O PAINEL /admin E A LISTA DE CONFIRMADOS
+====================================================
 
-As respostas dos convidados vão direto para uma Planilha Google que fica no SEU Google Drive.
-Ninguém mais consegue ver: nem os convidados, nem quem abrir o código do site.
+O painel (seusite/admin) guarda tudo numa Planilha Google que fica no SEU Google Drive:
+  • os convidados que confirmarem presença (com acompanhantes e recados)
+  • a lista de presentes (adicionar, editar, excluir, com foto)
+  • a chave PIX e o link do Casar.com
+A senha do painel fica só dentro do Google — não aparece no site nem no GitHub.
 Leva uns 5 minutos e é grátis.
 
 1. CRIAR A PLANILHA
    - Entre em https://sheets.new (com a sua conta Google).
-   - Dê um nome, por exemplo: "Confirmados — Casamento Abel & Beatriz".
+   - Dê um nome, por exemplo: "Painel — Casamento Abel & Beatriz".
 
 2. COLAR O CÓDIGO
    - Na planilha: menu Extensões > Apps Script.
-   - Apague o que estiver lá e cole TODO o conteúdo do arquivo "google-apps-script.gs".
-   - Na linha  const SENHA = 'troque-esta-senha';  troque pela senha que vocês quiserem.
+   - Apague o que estiver lá e cole TODO o conteúdo do arquivo "google-apps-script.gs"
+     (use o arquivo que já vem com a sua senha, enviado na conversa; o do GitHub tem só
+     'troque-esta-senha' — nesse caso troque pela sua senha na linha  const SENHA = ...).
    - Clique no disquete (Salvar).
 
 3. PUBLICAR
    - Botão azul "Implantar" > "Nova implantação".
    - Na engrenagem, escolha "App da Web".
    - Executar como: "Eu".  Quem pode acessar: "Qualquer pessoa".
-     (isso só permite que o site ENVIE respostas; para LER a lista precisa da senha)
+     (isso só permite que o site ENVIE confirmações e LEIA a lista de presentes;
+      ver convidados e editar exige a senha)
    - Clique em "Implantar" e autorize com sua conta Google
      (se aparecer "O Google não verificou este app": Avançado > Acessar... — é o seu próprio script).
    - Copie o link do "App da Web" (termina em /exec).
 
 4. LIGAR NO SITE
-   - Opção fácil: me mande o link que eu coloco no site para você.
-   - Ou faça você mesma: abra o site com ?admin no final do endereço
-     (ex.: site-arquivo-unico.html?admin), clique em "Editar Site" > "📋 Lista de Confirmados" >
-     "⚙️ Configurar Google Planilhas", cole o link e clique em "Salvar link".
-     Depois clique em "⬇️ Baixar HTML" e publique o arquivo index.html que for baixado.
+   - Me mande o link /exec que eu coloco no site e no painel e publico no GitHub.
+   - (O painel também aceita colar o link direto na tela "Ligar o painel à planilha",
+      mas os convidados só enviam confirmações depois que o link estiver no site publicado.)
 
-5. VER A LISTA
-   - Na própria planilha (aba "Confirmações"), ou
-   - No site: abra com ?admin, clique em "Editar Site" > "📋 Lista de Confirmados", digite a senha.
-     Lá aparece o total de pessoas, quem vai, acompanhantes, recados e o botão para baixar em Excel (CSV).
-   - Para o Abel ver também: compartilhe a planilha com o e-mail dele (botão "Compartilhar")
-     e passe a senha para ele.
+5. PRIMEIRO ACESSO AO PAINEL
+   - Abra  https://SEU-SITE/admin/  e entre com a senha.
+   - Aba "Presentes": clique em "Importar os presentes do site" (só na primeira vez).
+     A partir daí, tudo o que vocês adicionarem, editarem ou excluírem aparece no site na hora.
+   - Aba "Pagamento": preencha a chave PIX.
+   - Aba "Convidados": lista de quem confirmou, com acompanhantes, recados e botão para baixar em Excel.
 
-IMPORTANTE: se você alterar o código do Apps Script depois, use "Implantar > Gerenciar implantações >
-editar (lápis) > Nova versão", assim o link continua o mesmo.
+IMPORTANTE
+   - Se mudar o código do Apps Script depois, use "Implantar > Gerenciar implantações >
+     editar (lápis) > Versão: Nova versão" — assim o link /exec continua o mesmo.
+   - Para trocar a senha: mude a linha  const SENHA = '...';  no Apps Script e publique uma nova versão.
+   - Depois de 15 senhas erradas seguidas o painel bloqueia por 15 minutos (proteção contra tentativas).

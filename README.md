@@ -7,14 +7,21 @@ Site do casamento de Abel & Beatriz — 23/01/2027, 16:30, Sítio de Dite (Sanha
 | Arquivo | O que é |
 |---|---|
 | `index.html` | O site completo em um arquivo só (é o que o GitHub Pages publica) |
-| `fonte/` | O mesmo site separado em partes (`index.html`, `app.js`, `default-data.js`, `tailwind.css`) e o servidor opcional `server.js` |
-| `google-apps-script.gs` | Código da lista privada de confirmados (Google Planilhas) |
-| `COMO-ATIVAR-LISTA-DE-CONFIRMADOS.txt` | Passo a passo para ligar a lista de confirmados |
+| `admin/` | Painel dos noivos (login com senha): convidados, presentes e PIX |
+| `fonte/` | Código-fonte separado em partes (`index.html`, `app.js`, `default-data.js`, `admin.html`, CSS) e o servidor opcional `server.js` |
+| `google-apps-script.gs` | Código da Planilha Google que guarda convidados, presentes e PIX |
+| `COMO-ATIVAR-LISTA-DE-CONFIRMADOS.txt` | Passo a passo para ligar o painel |
 
-## Área dos noivos
+## Painel dos noivos — `/admin`
 
-Abra o site com `?admin` no final do endereço para ver o botão **Editar Site** e a **Lista de Confirmados** (protegida por senha).
+Abra `…/admin/` e entre com a senha para:
 
-Para publicar edições: no modo de edição clique em **⬇️ Baixar HTML** e substitua o `index.html` deste repositório pelo arquivo baixado.
+- ver quem confirmou presença (acompanhantes, recados, totais, baixar em Excel);
+- adicionar, editar e excluir presentes (com foto) — aparecem no site na hora;
+- configurar a chave PIX e o link do Casar.com.
 
-> ⚠️ Nunca coloque a senha real da lista neste repositório — ela fica só no Google Apps Script.
+Os dados ficam numa Planilha Google dos noivos (veja `COMO-ATIVAR-LISTA-DE-CONFIRMADOS.txt`).
+
+Textos e fotos do site: abra o site com `?admin` no final do endereço, use **Editar Site** e depois **⬇️ Baixar HTML** para gerar o novo `index.html`.
+
+> ⚠️ Nunca coloque a senha real neste repositório — ela fica só no Google Apps Script.

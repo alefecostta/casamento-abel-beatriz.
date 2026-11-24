@@ -162,6 +162,62 @@ async function initSite() {
   renderAll();
   initMap();
   setupEditableListeners();
+  loadRemoteContent();
+}
+
+// Presentes e dados de pagamento cadastrados no painel /admin (Google Planilhas).
+// Se a planilha não responder, o site continua com a lista embutida.
+const GIFT_PLACEHOLDER =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"><rect width="160" height="160" fill="#faf5ef"/><text x="80" y="98" font-size="56" text-anchor="middle">🎁</text></svg>'
+  );
+
+async function loadRemoteContent() {
+  const endpoint = getRsvpEndpoint();
+  if (!endpoint) return;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+    const resp = await fetch(`${endpoint}?action=public`, { cache: 'no-store', signal: ctrl.signal });
+    clearTimeout(timer);
+    const data = await resp.json();
+    if (!data || !data.ok) return;
+
+    if (Array.isArray(data.gifts) && data.gifts.length) {
+      const safeImg = v =>
+        /^(data:image\/[a-z+]+;base64,[A-Za-z0-9+/=]+|https:\/\/[^"'<>\s]+)$/.test(v || '') ? v : '';
+      siteData.giftsSection.items = data.gifts
+        .filter(g => g && g.title)
+        .map(g => ({
+          id: Number(g.id),
+          title: escapeHtml(g.title),
+          price: Math.max(0, Number(g.price) || 0),
+          category: escapeHtml(g.category || 'Outros'),
+          img: safeImg(g.img)
+        }));
+      // Mantém o carrinho do convidado coerente com a lista atual
+      cart = cart
+        .map(c => {
+          const g = siteData.giftsSection.items.find(i => i.id === c.id);
+          return g ? { ...c, title: g.title, price: g.price, img: g.img } : null;
+        })
+        .filter(Boolean);
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+      } catch (e) {}
+      updateCartBadges();
+      populateGiftCategories();
+      renderGiftsList();
+    }
+
+    const cfg = data.config || {};
+    if (cfg.pixKey) siteData.giftsSection.pixKey = cfg.pixKey;
+    if (cfg.pixHolder) siteData.giftsSection.pixHolder = cfg.pixHolder;
+    if (/^https:\/\//.test(cfg.casarUrl || '')) siteData.giftsSection.casarUrl = cfg.casarUrl;
+  } catch (err) {
+    console.warn('Painel indisponível, usando a lista embutida:', err);
+  }
 }
 
 function deepMerge(target, source) {
@@ -1155,7 +1211,7 @@ function renderGiftsList() {
         <div>
           <div class="w-full h-44 bg-white rounded-[3px] flex items-center justify-center p-3 mb-4 overflow-hidden border border-[#f5ebe6]">
             <img
-              src="${item.img || item.imgOriginal || ''}"
+              src="${item.img || item.imgOriginal || GIFT_PLACEHOLDER}"
               alt="${(item.title || '').replace(/"/g, '&quot;')}"
               ${item.imgOriginal ? `onerror="if(this.src!=='${item.imgOriginal}'){this.src='${item.imgOriginal}'}"` : ''}
               class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300"
@@ -1407,7 +1463,7 @@ function showCheckoutOptions() {
 function copyPixKey() {
   const key = siteData.giftsSection.pixKey || '';
   if (!key || key === 'Informe sua chave PIX no Modo Edição') {
-    alert('Para configurar a sua chave PIX, ative o botão "Editar Site" no canto inferior direito e clique em "Configurar Chave PIX".');
+    alert('A chave PIX ainda não foi informada pelos noivos. Você pode presentear pelo site do Casar.com (opção ao lado).');
     return;
   }
   navigator.clipboard?.writeText(key);
